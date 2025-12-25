@@ -16,9 +16,9 @@ export function SettingsView() {
   const { settings, updateSettings, resetSettings } = useSettings()
 
   const themeOptions: { value: Theme; label: string }[] = [
-    { value: 'light', label: 'Light' },
-    { value: 'dark', label: 'Dark' },
-    { value: 'system', label: 'System' },
+    { value: 'light', label: '☀️ Light' },
+    { value: 'dark', label: '🌙 Dark' },
+    { value: 'system', label: '🔄 Auto' },
   ]
 
   const temperatureOptions: { value: TemperatureUnit; label: string }[] = [

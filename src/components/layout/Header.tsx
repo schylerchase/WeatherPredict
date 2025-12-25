@@ -6,18 +6,57 @@ import { useTheme } from '../../context/ThemeContext'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import { cn } from '../../utils/cn'
 
+// Auto/System icon component
+function AutoIcon({ size, className }: { size: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+      <path d="M16 12a4 4 0 0 1-4 4" strokeDasharray="4 2" />
+    </svg>
+  )
+}
+
 interface HeaderProps {
   onMenuToggle?: () => void
   isMenuOpen?: boolean
 }
 
 export function Header({ onMenuToggle, isMenuOpen }: HeaderProps) {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
   const isMobile = useIsMobile()
   const routerLocation = useRouterLocation()
 
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+  // Cycle through: light → dark → system (auto)
+  const cycleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'
+    setTheme(nextTheme)
+  }
+
+  const getThemeIcon = () => {
+    if (theme === 'system') {
+      return <AutoIcon size={20} className="text-macos-purple" />
+    }
+    if (theme === 'dark') {
+      return <MoonIcon size={20} className="text-macos-blue" />
+    }
+    return <SunIcon size={20} className="text-macos-yellow" />
+  }
+
+  const getThemeLabel = () => {
+    if (theme === 'system') return 'Auto (following system)'
+    if (theme === 'dark') return 'Dark mode'
+    return 'Light mode'
   }
 
   const navLinks = [
@@ -87,17 +126,14 @@ export function Header({ onMenuToggle, isMenuOpen }: HeaderProps) {
                 showLabel={false}
               />
 
-              {/* Theme toggle */}
+              {/* Theme toggle - cycles through Light → Dark → Auto */}
               <button
-                onClick={toggleTheme}
+                onClick={cycleTheme}
                 className="p-2 rounded-macos hover:bg-white/10 transition-colors"
-                aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+                aria-label={getThemeLabel()}
+                title={getThemeLabel()}
               >
-                {resolvedTheme === 'dark' ? (
-                  <SunIcon size={20} className="text-macos-yellow" />
-                ) : (
-                  <MoonIcon size={20} className="text-macos-gray-600" />
-                )}
+                {getThemeIcon()}
               </button>
             </div>
           </div>

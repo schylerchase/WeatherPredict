@@ -48,7 +48,7 @@ export function MapControls({
         <GlassCard
           variant="elevated"
           padding="sm"
-          className="absolute top-full right-0 mt-2 w-64 animate-scale-in"
+          className="absolute top-12 right-0 w-64 max-h-72 overflow-y-auto animate-scale-in"
         >
           <h3 className="text-xs font-semibold text-macos-gray-500 dark:text-macos-gray-400 uppercase tracking-wide mb-3">
             Map Layers

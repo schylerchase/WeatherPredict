@@ -35,11 +35,13 @@ export function Dashboard() {
           {/* Grid layout for map and daily forecast */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Weather map */}
-            <div>
+            <div className="overflow-visible">
               <h3 className="text-sm font-semibold text-macos-gray-500 dark:text-macos-gray-400 uppercase tracking-wide mb-3">
                 Radar Map
               </h3>
-              <WeatherMap height="350px" showTimeline={true} />
+              <div className="relative">
+                <WeatherMap height="350px" showTimeline={true} />
+              </div>
             </div>
 
             {/* Daily forecast */}

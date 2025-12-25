@@ -88,11 +88,11 @@ export function WeatherMap({
   }
 
   return (
-    <div className={cn('relative rounded-macos-lg overflow-hidden', className)} style={{ height }}>
+    <div className={cn('relative rounded-macos-lg', className)} style={{ height }}>
       <MapContainer
         center={center}
         zoom={zoom}
-        className="w-full h-full"
+        className="w-full h-full rounded-macos-lg overflow-hidden"
         zoomControl={false}
       >
         {/* Update map when location changes */}

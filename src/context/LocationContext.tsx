@@ -54,7 +54,15 @@ function saveToStorage<T>(key: string, value: T): void {
 
 export function LocationProvider({ children }: { children: ReactNode }) {
   const [currentLocation, setCurrentLocationState] = useState<Location | null>(
-    () => loadFromStorage<Location | null>(LAST_LOCATION_KEY, null)
+    () => {
+      const stored = loadFromStorage<Location | null>(LAST_LOCATION_KEY, null)
+      // Clear stale "Current Location" placeholder names from old versions
+      if (stored?.name === 'Current Location') {
+        localStorage.removeItem(LAST_LOCATION_KEY)
+        return null
+      }
+      return stored
+    }
   )
   const [favorites, setFavorites] = useState<FavoriteLocation[]>(() =>
     loadFromStorage<FavoriteLocation[]>(FAVORITES_KEY, [])

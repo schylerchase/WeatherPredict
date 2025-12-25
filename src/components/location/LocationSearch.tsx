@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { GlassInput } from '../common/GlassInput'
-import { GlassCard } from '../common/GlassCard'
 import { SearchIcon, LocationIcon } from '../common/Icon'
 import { useDebounce } from '../../hooks/useDebounce'
 import { useLocation } from '../../context/LocationContext'
@@ -126,12 +125,15 @@ export function LocationSearch({ onClose, autoFocus = false }: LocationSearchPro
         icon={<SearchIcon size={18} />}
       />
 
-      {/* Dropdown */}
+      {/* Dropdown - using solid variant for better readability */}
       {showDropdown && (
-        <GlassCard
-          variant="elevated"
-          padding="none"
-          className="absolute top-full left-0 right-0 mt-2 z-50 max-h-80 overflow-y-auto"
+        <div
+          className={cn(
+            "absolute top-full left-0 right-0 mt-2 z-50 max-h-80 overflow-y-auto",
+            "rounded-macos-lg shadow-macos-lg",
+            "bg-white dark:bg-macos-gray-800",
+            "border border-macos-gray-200 dark:border-macos-gray-700"
+          )}
         >
           {/* Loading state */}
           {isLoading && (
@@ -215,7 +217,7 @@ export function LocationSearch({ onClose, autoFocus = false }: LocationSearchPro
               No locations found for "{query}"
             </div>
           )}
-        </GlassCard>
+        </div>
       )}
     </div>
   )

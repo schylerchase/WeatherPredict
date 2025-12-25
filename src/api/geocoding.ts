@@ -42,23 +42,73 @@ export async function searchLocations(
   }))
 }
 
-// Reverse geocoding - get location name from coordinates
+// Nominatim reverse geocoding response
+interface NominatimReverseResponse {
+  place_id: number
+  display_name: string
+  address: {
+    city?: string
+    town?: string
+    village?: string
+    municipality?: string
+    county?: string
+    state?: string
+    country?: string
+    country_code?: string
+  }
+}
+
+// Reverse geocoding - get location name from coordinates using OpenStreetMap Nominatim
 export async function reverseGeocode(
   latitude: number,
   longitude: number
 ): Promise<Location | null> {
-  // Open-Meteo doesn't have a direct reverse geocoding API
-  // We'll use a workaround by searching for a location near these coordinates
-  // For now, we'll return a basic location object
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
 
-  return {
-    id: 0,
-    name: 'Current Location',
-    latitude,
-    longitude,
-    country: '',
-    countryCode: '',
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'WeatherPredict/1.0 (weather app)',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Reverse geocoding failed')
+    }
+
+    const data: NominatimReverseResponse = await response.json()
+
+    // Get the most specific city-level name
+    const cityName =
+      data.address.city ||
+      data.address.town ||
+      data.address.village ||
+      data.address.municipality ||
+      data.address.county ||
+      'Unknown Location'
+
+    return {
+      id: data.place_id,
+      name: cityName,
+      latitude,
+      longitude,
+      country: data.address.country || '',
+      countryCode: data.address.country_code?.toUpperCase() || '',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      admin1: data.address.state,
+    }
+  } catch (error) {
+    console.error('Reverse geocoding error:', error)
+    // Fallback to generic name if reverse geocoding fails
+    return {
+      id: 0,
+      name: 'My Location',
+      latitude,
+      longitude,
+      country: '',
+      countryCode: '',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }
   }
 }
 

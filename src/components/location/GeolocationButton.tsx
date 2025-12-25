@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { GlassButton } from '../common/GlassButton'
 import { LocationIcon } from '../common/Icon'
 import { useGeolocation } from '../../hooks/useGeolocation'
@@ -19,22 +20,35 @@ export function GeolocationButton({
 }: GeolocationButtonProps) {
   const { loading, error, getPosition, coordinates, isSupported } = useGeolocation()
   const { setCurrentLocation } = useLocation()
+  const [isGeocoding, setIsGeocoding] = useState(false)
+  const processedCoords = useRef<string | null>(null)
 
   const handleClick = async () => {
+    processedCoords.current = null // Reset so new coordinates will be processed
     getPosition()
   }
 
-  // When coordinates are received, update the location
-  if (coordinates && !loading) {
-    reverseGeocode(coordinates.latitude, coordinates.longitude).then((location) => {
-      if (location) {
-        setCurrentLocation({
-          ...location,
-          name: 'Current Location',
+  // When coordinates are received, do reverse geocoding
+  useEffect(() => {
+    if (coordinates && !loading) {
+      const coordsKey = `${coordinates.latitude},${coordinates.longitude}`
+
+      // Only process if we haven't already processed these coordinates
+      if (processedCoords.current === coordsKey) return
+      processedCoords.current = coordsKey
+
+      setIsGeocoding(true)
+      reverseGeocode(coordinates.latitude, coordinates.longitude)
+        .then((location) => {
+          if (location) {
+            setCurrentLocation(location) // Use the actual city name from reverse geocoding
+          }
         })
-      }
-    })
-  }
+        .finally(() => {
+          setIsGeocoding(false)
+        })
+    }
+  }, [coordinates, loading, setCurrentLocation])
 
   if (!isSupported) {
     return null
@@ -46,11 +60,11 @@ export function GeolocationButton({
         variant={variant}
         size={size}
         onClick={handleClick}
-        isLoading={loading}
+        isLoading={loading || isGeocoding}
         icon={<LocationIcon size={size === 'sm' ? 16 : 18} />}
         title="Use my location"
       >
-        {showLabel && 'Use my location'}
+        {showLabel && (isGeocoding ? 'Finding location...' : 'Use my location')}
       </GlassButton>
       {error && (
         <p className="mt-1 text-xs text-macos-red">{error}</p>

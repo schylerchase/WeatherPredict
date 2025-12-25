@@ -40,7 +40,7 @@ export function Dashboard() {
                 Radar Map
               </h3>
               <div className="relative">
-                <WeatherMap height="350px" showTimeline={true} />
+                <WeatherMap height="350px" showTimeline={true} compact={true} />
               </div>
             </div>
 

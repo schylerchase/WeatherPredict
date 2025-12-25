@@ -11,24 +11,29 @@ import { cn } from '../../utils/cn'
 interface HourlyItemProps {
   time: string
   temperature: number
+  apparentTemperature: number
   weatherCode: number
   precipitationProbability: number
+  windSpeed: number
   isNow?: boolean
 }
 
 function HourlyItem({
   time,
   temperature,
+  apparentTemperature,
   weatherCode,
   precipitationProbability,
+  windSpeed,
   isNow = false,
 }: HourlyItemProps) {
   const { settings } = useSettings()
+  const showFeelsLike = Math.abs(temperature - apparentTemperature) > 3
 
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-1 px-3 py-2 rounded-macos min-w-[60px]',
+        'flex flex-col items-center gap-1 px-3 py-2 rounded-macos min-w-[70px]',
         'transition-colors duration-200',
         isNow && 'bg-macos-blue/10 dark:bg-macos-blue/20'
       )}
@@ -44,15 +49,35 @@ function HourlyItem({
         {isNow ? 'Now' : formatHour(time)}
       </span>
 
+      {/* Precipitation probability badge */}
+      {precipitationProbability > 0 && (
+        <span className={cn(
+          "text-[10px] px-1.5 py-0.5 rounded-full",
+          precipitationProbability >= 70
+            ? "bg-macos-blue/20 text-macos-blue font-semibold"
+            : "text-macos-blue"
+        )}>
+          💧{formatPercentage(precipitationProbability)}
+        </span>
+      )}
+
       <span className="text-2xl my-1">{getWeatherIcon(weatherCode, true)}</span>
 
       <span className="text-sm font-semibold text-macos-gray-900 dark:text-white">
         {formatTemperature(temperature, settings.temperatureUnit, false)}
       </span>
 
-      {precipitationProbability > 0 && (
-        <span className="text-xs text-macos-blue">
-          {formatPercentage(precipitationProbability)}
+      {/* Feels like - only show if significantly different */}
+      {showFeelsLike && (
+        <span className="text-[10px] text-macos-gray-400 dark:text-macos-gray-500">
+          Feels {formatTemperature(apparentTemperature, settings.temperatureUnit, false)}
+        </span>
+      )}
+
+      {/* Wind indicator for strong winds */}
+      {windSpeed > 20 && (
+        <span className="text-[10px] text-macos-gray-400 dark:text-macos-gray-500">
+          💨 {Math.round(windSpeed)}
         </span>
       )}
     </div>
@@ -141,8 +166,10 @@ export function HourlyForecast() {
             key={hour.time}
             time={hour.time}
             temperature={hour.temperature}
+            apparentTemperature={hour.apparentTemperature}
             weatherCode={hour.weatherCode}
             precipitationProbability={hour.precipitationProbability}
+            windSpeed={hour.windSpeed}
             isNow={index === 0}
           />
         ))}

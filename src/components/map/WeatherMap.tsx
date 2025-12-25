@@ -3,9 +3,12 @@ import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import { GlassCard } from '../common/GlassCard'
 import { RadarLayer } from './RadarLayer'
+import { SatelliteLayer } from './SatelliteLayer'
+import { OpenWeatherLayer } from './OpenWeatherLayer'
 import { MapControls } from './MapControls'
 import { TimelineSlider } from './TimelineSlider'
 import { useLocation } from '../../context/LocationContext'
+import { useSettings } from '../../context/SettingsContext'
 import { useRainViewer } from '../../hooks/useRainViewer'
 import type { MapLayer } from '../../types/map'
 import { DEFAULT_LAYERS } from '../../types/map'
@@ -51,12 +54,15 @@ export function WeatherMap({
   compact = false,
 }: WeatherMapProps) {
   const { currentLocation } = useLocation()
+  const { settings } = useSettings()
   const [layers, setLayers] = useState<MapLayer[]>(DEFAULT_LAYERS)
 
   const rainViewer = useRainViewer({
     autoPlay: false,
     animationSpeed: 500,
   })
+
+  const owmApiKey = settings.openWeatherMapApiKey
 
   // Default center (will be overridden by currentLocation)
   const center: [number, number] = currentLocation
@@ -80,6 +86,11 @@ export function WeatherMap({
   }
 
   const radarLayer = layers.find((l) => l.id === 'radar')
+  const satelliteLayer = layers.find((l) => l.id === 'satellite')
+  const temperatureLayer = layers.find((l) => l.id === 'temperature')
+  const precipitationLayer = layers.find((l) => l.id === 'precipitation')
+  const windLayer = layers.find((l) => l.id === 'wind')
+  const cloudsLayer = layers.find((l) => l.id === 'clouds')
 
   if (!currentLocation) {
     return (
@@ -113,13 +124,56 @@ export function WeatherMap({
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         /> */}
 
-        {/* Radar layer */}
+        {/* Satellite layer (RainViewer) */}
+        {satelliteLayer?.visible && rainViewer.data && rainViewer.currentSatelliteFrame && (
+          <SatelliteLayer
+            host={rainViewer.data.host}
+            path={rainViewer.currentSatelliteFrame.path}
+            opacity={satelliteLayer.opacity}
+          />
+        )}
+
+        {/* Radar layer (RainViewer) */}
         {radarLayer?.visible && rainViewer.data && rainViewer.currentFrame && (
           <RadarLayer
             host={rainViewer.data.host}
             path={rainViewer.currentFrame.path}
             opacity={radarLayer.opacity}
           />
+        )}
+
+        {/* OpenWeatherMap layers (require API key) */}
+        {owmApiKey && (
+          <>
+            {cloudsLayer?.visible && (
+              <OpenWeatherLayer
+                layerType="clouds_new"
+                apiKey={owmApiKey}
+                opacity={cloudsLayer.opacity}
+              />
+            )}
+            {precipitationLayer?.visible && (
+              <OpenWeatherLayer
+                layerType="precipitation_new"
+                apiKey={owmApiKey}
+                opacity={precipitationLayer.opacity}
+              />
+            )}
+            {temperatureLayer?.visible && (
+              <OpenWeatherLayer
+                layerType="temp_new"
+                apiKey={owmApiKey}
+                opacity={temperatureLayer.opacity}
+              />
+            )}
+            {windLayer?.visible && (
+              <OpenWeatherLayer
+                layerType="wind_new"
+                apiKey={owmApiKey}
+                opacity={windLayer.opacity}
+              />
+            )}
+          </>
         )}
 
         {/* Location marker */}
@@ -170,6 +224,7 @@ export function WeatherMap({
           onToggleLayer={toggleLayer}
           onOpacityChange={setLayerOpacity}
           compact={compact}
+          hasOwmApiKey={!!owmApiKey}
         />
       )}
 

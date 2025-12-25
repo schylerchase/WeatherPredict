@@ -12,6 +12,7 @@ interface MapControlsProps {
   onToggleLayer: (layerId: string) => void
   onOpacityChange: (layerId: string, opacity: number) => void
   compact?: boolean
+  hasOwmApiKey?: boolean
 }
 
 export function MapControls({
@@ -19,6 +20,7 @@ export function MapControls({
   onToggleLayer,
   onOpacityChange,
   compact = false,
+  hasOwmApiKey = false,
 }: MapControlsProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [expandedLayer, setExpandedLayer] = useState<string | null>(null)
@@ -59,46 +61,61 @@ export function MapControls({
           )}
         >
           <div className={cn("space-y-2", compact && "space-y-1")}>
-            {layers.map((layer) => (
-              <div key={layer.id} className="space-y-1">
-                <div
-                  className={cn(
-                    "flex items-center justify-between cursor-pointer rounded-lg p-1.5 -mx-1.5 transition-colors",
-                    "hover:bg-white/50 dark:hover:bg-white/10"
-                  )}
-                  onClick={() => compact && setExpandedLayer(expandedLayer === layer.id ? null : layer.id)}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={cn(compact ? "text-base" : "text-lg")}>{getLayerIcon(layer.id)}</span>
-                    <span className={cn(
-                      "font-medium text-macos-gray-900 dark:text-white truncate",
-                      compact ? "text-xs" : "text-sm"
-                    )}>
-                      {layer.name}
-                    </span>
-                  </div>
-                  <Toggle
-                    checked={layer.visible}
-                    onChange={() => onToggleLayer(layer.id)}
-                    size="sm"
-                  />
-                </div>
+            {layers.map((layer) => {
+              const needsApiKey = layer.requiresApiKey && !hasOwmApiKey
+              const isDisabled = needsApiKey
 
-                {/* Opacity slider - always show in non-compact, click to expand in compact */}
-                {layer.visible && (!compact || expandedLayer === layer.id) && (
-                  <div className={cn("pl-7", compact && "pb-1")}>
-                    <Slider
-                      value={Math.round(layer.opacity * 100)}
-                      onChange={(value) => onOpacityChange(layer.id, value / 100)}
-                      min={10}
-                      max={100}
-                      showValue
-                      valueFormatter={(v) => `${v}%`}
+              return (
+                <div key={layer.id} className="space-y-1">
+                  <div
+                    className={cn(
+                      "flex items-center justify-between cursor-pointer rounded-lg p-1.5 -mx-1.5 transition-colors",
+                      "hover:bg-white/50 dark:hover:bg-white/10",
+                      isDisabled && "opacity-60"
+                    )}
+                    onClick={() => compact && setExpandedLayer(expandedLayer === layer.id ? null : layer.id)}
+                    title={needsApiKey ? 'Requires OpenWeatherMap API key (see Settings)' : undefined}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={cn(compact ? "text-base" : "text-lg")}>{getLayerIcon(layer.id)}</span>
+                      <div className="min-w-0">
+                        <span className={cn(
+                          "font-medium text-macos-gray-900 dark:text-white truncate block",
+                          compact ? "text-xs" : "text-sm"
+                        )}>
+                          {layer.name}
+                        </span>
+                        {needsApiKey && !compact && (
+                          <span className="text-xs text-macos-orange">
+                            API key required
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Toggle
+                      checked={layer.visible && !isDisabled}
+                      onChange={() => !isDisabled && onToggleLayer(layer.id)}
+                      size="sm"
+                      disabled={isDisabled}
                     />
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {/* Opacity slider - always show in non-compact, click to expand in compact */}
+                  {layer.visible && !isDisabled && (!compact || expandedLayer === layer.id) && (
+                    <div className={cn("pl-7", compact && "pb-1")}>
+                      <Slider
+                        value={Math.round(layer.opacity * 100)}
+                        onChange={(value) => onOpacityChange(layer.id, value / 100)}
+                        min={10}
+                        max={100}
+                        showValue
+                        valueFormatter={(v) => `${v}%`}
+                      />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </GlassCard>
       )}

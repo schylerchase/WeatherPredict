@@ -16,6 +16,8 @@ export interface Settings {
     longitude: number
     name: string
   }
+  // API Keys for enhanced features
+  openWeatherMapApiKey?: string
 }
 
 export const DEFAULT_SETTINGS: Settings = {

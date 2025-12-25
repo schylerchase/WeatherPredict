@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { GlassCard } from '../components/common/GlassCard'
 import { GlassButton } from '../components/common/GlassButton'
+import { GlassInput } from '../components/common/GlassInput'
 import { SegmentedControl } from '../components/common/SegmentedControl'
 import { useTheme } from '../context/ThemeContext'
 import { useSettings } from '../context/SettingsContext'
@@ -14,6 +16,7 @@ import type {
 export function SettingsView() {
   const { theme, setTheme } = useTheme()
   const { settings, updateSettings, resetSettings } = useSettings()
+  const [apiKeyInput, setApiKeyInput] = useState(settings.openWeatherMapApiKey || '')
 
   const themeOptions: { value: Theme; label: string }[] = [
     { value: 'light', label: '☀️ Light' },
@@ -153,6 +156,62 @@ export function SettingsView() {
               onChange={(value) => updateSettings({ timeFormat: value })}
               size="sm"
             />
+          </div>
+        </div>
+      </GlassCard>
+
+      {/* API Keys */}
+      <GlassCard>
+        <h2 className="text-lg font-semibold text-macos-gray-900 dark:text-white mb-4">
+          Map Layers
+        </h2>
+
+        <div className="space-y-4">
+          <div>
+            <div className="font-medium text-macos-gray-900 dark:text-white">
+              OpenWeatherMap API Key
+            </div>
+            <div className="text-sm text-macos-gray-500 dark:text-macos-gray-400 mb-3">
+              Required for temperature, wind, precipitation, and cloud map layers.{' '}
+              <a
+                href="https://openweathermap.org/api"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-macos-blue hover:underline"
+              >
+                Get a free API key
+              </a>
+            </div>
+            <div className="flex gap-2">
+              <GlassInput
+                type="password"
+                placeholder="Enter your API key"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                className="flex-1"
+              />
+              <GlassButton
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  updateSettings({ openWeatherMapApiKey: apiKeyInput || undefined })
+                }}
+              >
+                Save
+              </GlassButton>
+            </div>
+            {settings.openWeatherMapApiKey && (
+              <div className="mt-2 flex items-center gap-2 text-sm text-macos-green">
+                <span>✓</span>
+                <span>API key saved</span>
+              </div>
+            )}
+          </div>
+
+          <div className="pt-2 text-sm text-macos-gray-600 dark:text-macos-gray-400">
+            <strong>Free layers (no API key):</strong> Radar, Satellite
+            <br />
+            <strong>With API key:</strong> Temperature, Precipitation, Wind, Clouds
           </div>
         </div>
       </GlassCard>

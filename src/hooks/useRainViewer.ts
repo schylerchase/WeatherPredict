@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { RainViewerData } from '../types/map'
-import { getRainViewerData, getRadarFrames } from '../api/rainviewer'
+import type { RainViewerData, RainViewerFrame } from '../types/map'
+import { getRainViewerData, getRadarFrames, getSatelliteFrames } from '../api/rainviewer'
 
 interface UseRainViewerOptions {
   autoPlay?: boolean
@@ -14,6 +14,7 @@ export function useRainViewer(options: UseRainViewerOptions = {}) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
+  const [currentSatelliteFrameIndex, setCurrentSatelliteFrameIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoPlay)
 
   const animationRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -30,6 +31,12 @@ export function useRainViewer(options: UseRainViewerOptions = {}) {
       // Set current frame to the latest past frame
       const pastFrameCount = result.radar.past.length
       setCurrentFrameIndex(Math.max(0, pastFrameCount - 1))
+
+      // Set satellite frame to latest if available
+      const satelliteFrames = result.satellite?.infrared || []
+      if (satelliteFrames.length > 0) {
+        setCurrentSatelliteFrameIndex(satelliteFrames.length - 1)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch radar data')
     } finally {
@@ -48,9 +55,13 @@ export function useRainViewer(options: UseRainViewerOptions = {}) {
     return () => clearInterval(interval)
   }, [fetchData])
 
-  // Get all frames
+  // Get all radar frames
   const frames = data ? getRadarFrames(data) : []
   const currentFrame = frames[currentFrameIndex] || null
+
+  // Get all satellite frames
+  const satelliteFrames: RainViewerFrame[] = data ? getSatelliteFrames(data) : []
+  const currentSatelliteFrame = satelliteFrames[currentSatelliteFrameIndex] || null
 
   // Animation control
   useEffect(() => {
@@ -86,13 +97,27 @@ export function useRainViewer(options: UseRainViewerOptions = {}) {
     setCurrentFrameIndex((prev) => (prev - 1 + frames.length) % frames.length)
   }, [frames.length])
 
+  const goToSatelliteFrame = useCallback(
+    (index: number) => {
+      setCurrentSatelliteFrameIndex(Math.max(0, Math.min(index, satelliteFrames.length - 1)))
+    },
+    [satelliteFrames.length]
+  )
+
   return {
     data,
     isLoading,
     error,
+    // Radar
     frames,
     currentFrame,
     currentFrameIndex,
+    // Satellite
+    satelliteFrames,
+    currentSatelliteFrame,
+    currentSatelliteFrameIndex,
+    goToSatelliteFrame,
+    // Animation controls
     isPlaying,
     play,
     pause,

@@ -4,7 +4,6 @@ export type LayerType =
   | 'temperature'
   | 'precipitation'
   | 'wind'
-  | 'pressure'
   | 'clouds'
 
 export interface MapLayer {
@@ -14,7 +13,8 @@ export interface MapLayer {
   icon: string
   visible: boolean
   opacity: number
-  source: 'rainviewer' | 'openmeteo' | 'custom'
+  source: 'rainviewer' | 'openweathermap'
+  requiresApiKey?: boolean
 }
 
 export interface RainViewerFrame {
@@ -66,7 +66,8 @@ export const DEFAULT_LAYERS: MapLayer[] = [
     icon: 'thermometer',
     visible: false,
     opacity: 0.6,
-    source: 'custom',
+    source: 'openweathermap',
+    requiresApiKey: true,
   },
   {
     id: 'precipitation',
@@ -75,7 +76,8 @@ export const DEFAULT_LAYERS: MapLayer[] = [
     icon: 'droplets',
     visible: false,
     opacity: 0.6,
-    source: 'custom',
+    source: 'openweathermap',
+    requiresApiKey: true,
   },
   {
     id: 'wind',
@@ -84,7 +86,8 @@ export const DEFAULT_LAYERS: MapLayer[] = [
     icon: 'wind',
     visible: false,
     opacity: 0.5,
-    source: 'custom',
+    source: 'openweathermap',
+    requiresApiKey: true,
   },
   {
     id: 'clouds',
@@ -93,6 +96,7 @@ export const DEFAULT_LAYERS: MapLayer[] = [
     icon: 'cloud',
     visible: false,
     opacity: 0.5,
-    source: 'custom',
+    source: 'openweathermap',
+    requiresApiKey: true,
   },
 ]

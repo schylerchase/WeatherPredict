@@ -139,21 +139,26 @@ export function WeatherMap({
       {showLocationLabel && (
         <div className="absolute top-3 left-3 z-[1000]">
           <div className={cn(
-            "px-3 py-1.5 rounded-lg shadow-lg",
-            "bg-white/80 dark:bg-macos-gray-800/80 backdrop-blur-md",
-            "border border-white/20 dark:border-white/10"
+            "px-3 py-2 rounded-xl shadow-lg",
+            "bg-white/90 dark:bg-macos-gray-800/90 backdrop-blur-md",
+            "border border-white/30 dark:border-white/10"
           )}>
-            <div className={cn(
-              "font-semibold text-macos-gray-900 dark:text-white",
-              compact ? "text-xs" : "text-sm"
-            )}>
-              {currentLocation.name}
-            </div>
-            {currentLocation.admin1 && !compact && (
-              <div className="text-xs text-macos-gray-500 dark:text-macos-gray-400">
-                {currentLocation.admin1}, {currentLocation.country}
+            <div className="flex items-center gap-2">
+              <span className="text-base">📍</span>
+              <div>
+                <div className={cn(
+                  "font-semibold text-macos-gray-900 dark:text-white",
+                  compact ? "text-sm" : "text-base"
+                )}>
+                  {currentLocation.name}
+                </div>
+                {currentLocation.admin1 && (
+                  <div className="text-xs text-macos-gray-500 dark:text-macos-gray-400">
+                    {currentLocation.admin1}, {currentLocation.country}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}

@@ -181,6 +181,10 @@ export function SettingsView() {
               >
                 Get a free API key
               </a>
+              <br />
+              <span className="text-macos-orange">
+                ⚠️ New API keys can take up to 2 hours to activate!
+              </span>
             </div>
             <div className="flex gap-2">
               <GlassInput

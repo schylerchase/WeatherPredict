@@ -1,4 +1,3 @@
-import { GlassCard } from '../common/GlassCard'
 import { Slider } from '../common/Slider'
 import { PlayIcon, PauseIcon, ChevronLeftIcon, ChevronRightIcon } from '../common/Icon'
 import type { RainViewerFrame } from '../../types/map'
@@ -34,42 +33,53 @@ export function TimelineSlider({
   const isNowcast = currentFrame && currentFrame.time > now
 
   return (
-    <GlassCard
-      variant="elevated"
-      padding="sm"
+    <div
       className={cn(
         "absolute left-1/2 -translate-x-1/2 z-[1000]",
+        "bg-white dark:bg-macos-gray-800",
+        "shadow-lg border border-macos-gray-200 dark:border-macos-gray-700",
+        "rounded-lg",
         compact
-          ? "bottom-12 w-64 max-w-[calc(100%-1rem)]"
-          : "bottom-16 w-80 max-w-[calc(100%-2rem)]"
+          ? "bottom-[60px] px-2 py-1.5"
+          : "bottom-[70px] px-3 py-2"
       )}
     >
-      <div className={cn("flex items-center", compact ? "gap-2" : "gap-3")}>
+      <div className={cn("flex items-center", compact ? "gap-1.5" : "gap-2")}>
         {/* Previous button */}
         <button
           onClick={() => onIndexChange(Math.max(0, currentIndex - 1))}
           disabled={currentIndex === 0}
           className={cn(
-            'p-1.5 rounded-full transition-colors',
+            'flex items-center justify-center rounded transition-colors',
+            'text-macos-gray-600 dark:text-macos-gray-400',
             'hover:bg-macos-gray-100 dark:hover:bg-macos-gray-700',
-            'disabled:opacity-30 disabled:cursor-not-allowed'
+            'disabled:opacity-30 disabled:cursor-not-allowed',
+            compact ? 'w-6 h-6' : 'w-7 h-7'
           )}
           aria-label="Previous frame"
+          title="Previous frame"
         >
-          <ChevronLeftIcon size={16} />
+          <ChevronLeftIcon size={compact ? 14 : 16} />
         </button>
 
-        {/* Play/Pause button */}
+        {/* Play/Pause button - prominent affordance */}
         <button
           onClick={onPlayToggle}
           className={cn(
-            'p-2 rounded-full transition-colors',
+            'flex items-center justify-center rounded-full transition-all',
             'bg-macos-blue text-white',
-            'hover:bg-macos-blue-light'
+            'hover:bg-macos-blue-dark active:scale-95',
+            'shadow-sm',
+            compact ? 'w-7 h-7' : 'w-8 h-8'
           )}
-          aria-label={isPlaying ? 'Pause' : 'Play'}
+          aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
+          title={isPlaying ? 'Pause' : 'Play'}
         >
-          {isPlaying ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
+          {isPlaying ? (
+            <PauseIcon size={compact ? 12 : 14} />
+          ) : (
+            <PlayIcon size={compact ? 12 : 14} />
+          )}
         </button>
 
         {/* Next button */}
@@ -77,17 +87,23 @@ export function TimelineSlider({
           onClick={() => onIndexChange(Math.min(frames.length - 1, currentIndex + 1))}
           disabled={currentIndex === frames.length - 1}
           className={cn(
-            'p-1.5 rounded-full transition-colors',
+            'flex items-center justify-center rounded transition-colors',
+            'text-macos-gray-600 dark:text-macos-gray-400',
             'hover:bg-macos-gray-100 dark:hover:bg-macos-gray-700',
-            'disabled:opacity-30 disabled:cursor-not-allowed'
+            'disabled:opacity-30 disabled:cursor-not-allowed',
+            compact ? 'w-6 h-6' : 'w-7 h-7'
           )}
           aria-label="Next frame"
+          title="Next frame"
         >
-          <ChevronRightIcon size={16} />
+          <ChevronRightIcon size={compact ? 14 : 16} />
         </button>
 
+        {/* Divider */}
+        <div className="w-px h-5 bg-macos-gray-200 dark:bg-macos-gray-700 mx-1" />
+
         {/* Timeline slider */}
-        <div className="flex-1">
+        <div className={compact ? "w-20" : "w-28"}>
           <Slider
             value={currentIndex}
             onChange={onIndexChange}
@@ -97,15 +113,24 @@ export function TimelineSlider({
         </div>
 
         {/* Time display */}
-        <div className="text-right min-w-[70px]">
-          <div className="text-sm font-medium text-macos-gray-900 dark:text-white">
+        <div className={cn(
+          "text-right",
+          compact ? "min-w-[50px]" : "min-w-[60px]"
+        )}>
+          <div className={cn(
+            "font-semibold tabular-nums text-macos-gray-900 dark:text-white",
+            compact ? "text-xs" : "text-sm"
+          )}>
             {currentTime}
           </div>
-          <div className="text-xs text-macos-gray-500 dark:text-macos-gray-400">
+          <div className={cn(
+            "text-macos-gray-500 dark:text-macos-gray-400",
+            compact ? "text-[10px]" : "text-xs"
+          )}>
             {label || (isNowcast ? 'Forecast' : 'Past')}
           </div>
         </div>
       </div>
-    </GlassCard>
+    </div>
   )
 }

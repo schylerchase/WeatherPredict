@@ -8,7 +8,7 @@ interface UseRainViewerOptions {
 }
 
 export function useRainViewer(options: UseRainViewerOptions = {}) {
-  const { autoPlay = false, animationSpeed = 500 } = options
+  const { autoPlay = false, animationSpeed: initialSpeed = 500 } = options
 
   const [data, setData] = useState<RainViewerData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -16,6 +16,7 @@ export function useRainViewer(options: UseRainViewerOptions = {}) {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
   const [currentSatelliteFrameIndex, setCurrentSatelliteFrameIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoPlay)
+  const [animationSpeed, setAnimationSpeed] = useState(initialSpeed)
 
   const animationRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -126,5 +127,8 @@ export function useRainViewer(options: UseRainViewerOptions = {}) {
     nextFrame,
     prevFrame,
     refetch: fetchData,
+    // Speed control
+    animationSpeed,
+    setAnimationSpeed,
   }
 }

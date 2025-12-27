@@ -1,4 +1,6 @@
 export { WeatherMap } from './WeatherMap'
 export { RadarLayer } from './RadarLayer'
 export { LayerBar } from './LayerBar'
-export { TimelineSlider } from './TimelineSlider'
+export { MapTimeline } from './MapTimeline'
+export { MapZoomControls } from './MapZoomControls'
+export { RadarLegend } from './RadarLegend'

@@ -224,6 +224,7 @@ export function WeatherMap({
           onToggleLayer={toggleLayer}
           onOpacityChange={setLayerOpacity}
           hasOwmApiKey={!!owmApiKey}
+          compact={compact}
         />
       )}
 
@@ -236,6 +237,7 @@ export function WeatherMap({
           onIndexChange={radarLayer?.visible ? rainViewer.goToFrame : rainViewer.goToSatelliteFrame}
           onPlayToggle={rainViewer.togglePlay}
           label={radarLayer?.visible ? 'Radar' : 'Satellite'}
+          compact={compact}
         />
       )}
 

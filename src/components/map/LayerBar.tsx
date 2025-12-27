@@ -8,6 +8,7 @@ interface LayerBarProps {
   onToggleLayer: (layerId: string) => void
   onOpacityChange: (layerId: string, opacity: number) => void
   hasOwmApiKey?: boolean
+  compact?: boolean
 }
 
 const LAYER_ICONS: Record<string, string> = {
@@ -24,8 +25,14 @@ export function LayerBar({
   onToggleLayer,
   onOpacityChange,
   hasOwmApiKey = false,
+  compact = false,
 }: LayerBarProps) {
   const [expandedLayer, setExpandedLayer] = useState<string | null>(null)
+
+  // In compact mode, only show the free layers (radar, satellite)
+  const visibleLayers = compact
+    ? layers.filter(l => !l.requiresApiKey)
+    : layers
 
   const handleLayerClick = (layerId: string, isDisabled: boolean | undefined) => {
     if (isDisabled) return
@@ -49,15 +56,19 @@ export function LayerBar({
   }
 
   return (
-    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[1000]">
+    <div className={cn(
+      "absolute left-1/2 -translate-x-1/2 z-[1000]",
+      compact ? "bottom-2" : "bottom-3"
+    )}>
       <div
         className={cn(
-          'flex items-center gap-1 px-2 py-1.5 rounded-xl',
+          'flex items-center rounded-xl',
           'bg-white/90 dark:bg-macos-gray-800/90 backdrop-blur-xl',
-          'shadow-lg border border-white/20 dark:border-white/10'
+          'shadow-lg border border-white/20 dark:border-white/10',
+          compact ? 'gap-0.5 px-1.5 py-1' : 'gap-1 px-2 py-1.5'
         )}
       >
-        {layers.map((layer) => {
+        {visibleLayers.map((layer) => {
           const needsApiKey = layer.requiresApiKey && !hasOwmApiKey
           const isDisabled = needsApiKey
           const isActive = layer.visible && !isDisabled
@@ -74,9 +85,10 @@ export function LayerBar({
                     : layer.name
                 }
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg',
-                  'text-sm font-medium transition-all duration-200',
+                  'flex items-center rounded-lg',
+                  'font-medium transition-all duration-200',
                   'focus:outline-none focus:ring-2 focus:ring-macos-blue/50',
+                  compact ? 'gap-1 px-2 py-1 text-xs' : 'gap-1.5 px-3 py-1.5 text-sm',
                   isActive
                     ? [
                         'bg-macos-blue text-white',
@@ -89,8 +101,8 @@ export function LayerBar({
                   isDisabled && 'opacity-40 cursor-not-allowed'
                 )}
               >
-                <span className="text-base">{LAYER_ICONS[layer.id] || '🗺️'}</span>
-                <span className="hidden sm:inline">{layer.name}</span>
+                <span className={compact ? "text-sm" : "text-base"}>{LAYER_ICONS[layer.id] || '🗺️'}</span>
+                {!compact && <span className="hidden sm:inline">{layer.name}</span>}
               </button>
 
               {/* Opacity popup */}

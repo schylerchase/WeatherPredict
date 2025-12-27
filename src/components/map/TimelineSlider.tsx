@@ -12,6 +12,7 @@ interface TimelineSliderProps {
   onIndexChange: (index: number) => void
   onPlayToggle: () => void
   label?: string
+  compact?: boolean
 }
 
 export function TimelineSlider({
@@ -21,6 +22,7 @@ export function TimelineSlider({
   onIndexChange,
   onPlayToggle,
   label,
+  compact = false,
 }: TimelineSliderProps) {
   if (frames.length === 0) return null
 
@@ -35,9 +37,14 @@ export function TimelineSlider({
     <GlassCard
       variant="elevated"
       padding="sm"
-      className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[1000] w-80 max-w-[calc(100%-2rem)]"
+      className={cn(
+        "absolute left-1/2 -translate-x-1/2 z-[1000]",
+        compact
+          ? "bottom-12 w-64 max-w-[calc(100%-1rem)]"
+          : "bottom-16 w-80 max-w-[calc(100%-2rem)]"
+      )}
     >
-      <div className="flex items-center gap-3">
+      <div className={cn("flex items-center", compact ? "gap-2" : "gap-3")}>
         {/* Previous button */}
         <button
           onClick={() => onIndexChange(Math.max(0, currentIndex - 1))}

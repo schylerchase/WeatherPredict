@@ -51,7 +51,7 @@ export function MapTimeline({
     <div className={cn(
       "bg-white dark:bg-macos-gray-800",
       "border-t border-macos-gray-200 dark:border-macos-gray-700",
-      "px-4 py-3"
+      "px-6 py-4"
     )}>
       <div className="flex items-center gap-4">
         {/* Playback controls */}
@@ -113,13 +113,15 @@ export function MapTimeline({
               style={{ width: `${(currentIndex / (frames.length - 1)) * 100}%` }}
             />
 
-            {/* Now marker */}
+            {/* Now marker - prominent vertical line */}
             {nowIndex >= 0 && nowIndex < frames.length && (
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 bg-macos-gray-400 dark:bg-macos-gray-500"
+                className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center"
                 style={{ left: `${(nowIndex / (frames.length - 1)) * 100}%` }}
-                title="Now"
-              />
+                title="Current time"
+              >
+                <div className="w-0.5 h-4 bg-macos-blue rounded-full shadow-sm" />
+              </div>
             )}
 
             {/* Draggable thumb */}
@@ -153,11 +155,11 @@ export function MapTimeline({
 
           {/* Labels below */}
           <div className="flex justify-between text-[10px] text-macos-gray-500 dark:text-macos-gray-400">
-            <span>{frames[0] ? formatFrameTime(frames[0].time) : ''}</span>
-            <span className="font-medium">
-              {nowIndex >= 0 && nowIndex < frames.length ? 'Now ↓' : ''}
+            <span className="text-macos-gray-400">Past</span>
+            <span className="font-semibold text-macos-blue">
+              {nowIndex >= 0 && nowIndex < frames.length ? '● Now' : ''}
             </span>
-            <span>{frames[frames.length - 1] ? formatFrameTime(frames[frames.length - 1].time) : ''}</span>
+            <span className="text-green-600 dark:text-green-400">Forecast →</span>
           </div>
         </div>
 
@@ -166,8 +168,13 @@ export function MapTimeline({
           <div className="text-lg font-semibold tabular-nums text-macos-gray-900 dark:text-white">
             {currentTime}
           </div>
-          <div className="text-xs text-macos-gray-500 dark:text-macos-gray-400">
-            {label || (isNowcast ? 'Forecast' : 'Past')}
+          <div className={cn(
+            "text-xs font-medium",
+            isNowcast
+              ? "text-green-600 dark:text-green-400"
+              : "text-macos-gray-500 dark:text-macos-gray-400"
+          )}>
+            {label ? `${label} • ` : ''}{isNowcast ? 'Forecast' : 'Past'}
           </div>
         </div>
 

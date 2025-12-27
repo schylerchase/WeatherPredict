@@ -76,7 +76,7 @@ export function LayerBar({
   return (
     <div className={cn(
       "absolute left-1/2 -translate-x-1/2 z-[1000]",
-      compact ? "bottom-2" : "bottom-3"
+      compact ? "bottom-2" : "bottom-4"
     )}>
       <div
         className={cn(

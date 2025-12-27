@@ -49,7 +49,7 @@ export function LayerBar({
   }
 
   return (
-    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[1000]">
+    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[1000]">
       <div
         className={cn(
           'flex items-center gap-1 px-2 py-1.5 rounded-xl',

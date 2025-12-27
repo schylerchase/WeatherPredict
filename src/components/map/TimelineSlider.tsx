@@ -35,7 +35,7 @@ export function TimelineSlider({
     <GlassCard
       variant="elevated"
       padding="sm"
-      className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] w-80 max-w-[calc(100%-2rem)]"
+      className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[1000] w-80 max-w-[calc(100%-2rem)]"
     >
       <div className="flex items-center gap-3">
         {/* Previous button */}

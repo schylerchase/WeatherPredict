@@ -11,6 +11,7 @@ interface TimelineSliderProps {
   isPlaying: boolean
   onIndexChange: (index: number) => void
   onPlayToggle: () => void
+  label?: string
 }
 
 export function TimelineSlider({
@@ -19,6 +20,7 @@ export function TimelineSlider({
   isPlaying,
   onIndexChange,
   onPlayToggle,
+  label,
 }: TimelineSliderProps) {
   if (frames.length === 0) return null
 
@@ -88,12 +90,12 @@ export function TimelineSlider({
         </div>
 
         {/* Time display */}
-        <div className="text-right min-w-[60px]">
+        <div className="text-right min-w-[70px]">
           <div className="text-sm font-medium text-macos-gray-900 dark:text-white">
             {currentTime}
           </div>
           <div className="text-xs text-macos-gray-500 dark:text-macos-gray-400">
-            {isNowcast ? 'Forecast' : 'Past'}
+            {label || (isNowcast ? 'Forecast' : 'Past')}
           </div>
         </div>
       </div>

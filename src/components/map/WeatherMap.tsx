@@ -5,7 +5,7 @@ import { GlassCard } from '../common/GlassCard'
 import { RadarLayer } from './RadarLayer'
 import { SatelliteLayer } from './SatelliteLayer'
 import { OpenWeatherLayer } from './OpenWeatherLayer'
-import { MapControls } from './MapControls'
+import { LayerBar } from './LayerBar'
 import { TimelineSlider } from './TimelineSlider'
 import { useLocation } from '../../context/LocationContext'
 import { useSettings } from '../../context/SettingsContext'
@@ -217,25 +217,25 @@ export function WeatherMap({
         </div>
       )}
 
-      {/* Map controls overlay */}
+      {/* Layer bar at bottom */}
       {showControls && (
-        <MapControls
+        <LayerBar
           layers={layers}
           onToggleLayer={toggleLayer}
           onOpacityChange={setLayerOpacity}
-          compact={compact}
           hasOwmApiKey={!!owmApiKey}
         />
       )}
 
-      {/* Timeline slider for radar animation */}
-      {showTimeline && radarLayer?.visible && rainViewer.frames.length > 0 && (
+      {/* Timeline slider for radar/satellite animation */}
+      {showTimeline && (radarLayer?.visible || satelliteLayer?.visible) && (
         <TimelineSlider
-          frames={rainViewer.frames}
-          currentIndex={rainViewer.currentFrameIndex}
+          frames={radarLayer?.visible ? rainViewer.frames : rainViewer.satelliteFrames}
+          currentIndex={radarLayer?.visible ? rainViewer.currentFrameIndex : rainViewer.currentSatelliteFrameIndex}
           isPlaying={rainViewer.isPlaying}
-          onIndexChange={rainViewer.goToFrame}
+          onIndexChange={radarLayer?.visible ? rainViewer.goToFrame : rainViewer.goToSatelliteFrame}
           onPlayToggle={rainViewer.togglePlay}
+          label={radarLayer?.visible ? 'Radar' : 'Satellite'}
         />
       )}
 

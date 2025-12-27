@@ -36,7 +36,8 @@ export function buildSatelliteTileUrl(
   path: string,
   options: { size?: 256 | 512 } = {}
 ): string {
-  const { size = 256 } = options
+  const { size = 512 } = options
+  // RainViewer satellite tiles: host/path/size/{z}/{x}/{y}/colorScheme/options.png
   return `${host}${path}/${size}/{z}/{x}/{y}/0/0_0.png`
 }
 
